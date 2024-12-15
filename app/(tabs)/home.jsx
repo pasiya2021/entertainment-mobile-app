@@ -1,10 +1,10 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+// import { View, Text } from 'react-native'
+// import React from 'react'
 
-export default function home() {
-  return (
-    <View>
-      <Text style={{fontSize:40,fontFamily:'outfit-bold'}}>home</Text>
-    </View>
-  )
-}
+// export default function home() {
+//   return (
+//     <View>
+//       <Text style={{fontSize:40,fontFamily:'outfit-bold'}}>home</Text>
+//     </View>
+//   )
+// }

@@ -1,10 +1,10 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+// import { View, Text } from 'react-native'
+// import React from 'react'
 
-export default function explore() {
-  return (
-    <View>
-      <Text>explore</Text>
-    </View>
-  )
-}
+// export default function explore() {
+//   return (
+//     <View>
+//       <Text>explore</Text>
+//     </View>
+//   )
+// }
