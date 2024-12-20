@@ -7,6 +7,8 @@ export default function _ScreenLayout() {
         <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="HomeScreen" options={{ headerShown: false }} />
             <Stack.Screen name="AlbumPlaylist" options={{ headerShown: false }} />
+            <Stack.Screen name="PlayerScreen" options={{ headerShown: false }} />
+            <Stack.Screen name="ArtistSongs" options={{ headerShown: false }} />
         </Stack>
     )
 }

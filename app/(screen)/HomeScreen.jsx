@@ -1,60 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, FlatList, Image, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import axios from 'axios'; // Make sure to install axios: npm install axios
-import {router} from 'expo-router';	
+import axios from 'axios'; 
+import { router } from 'expo-router';
+import { Audio } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
+
 const HomeScreen = () => {
-  // State for different sections
   const [albums, setAlbums] = useState([]);
   const [recentlyPlayed, setRecentlyPlayed] = useState([]);
   const [artists, setArtists] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch data from Deezer API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch Albums (you'll need to replace with actual album IDs)
         const albumPromises = ['302127', '119608', '210362','302127', '119608', '210362'].map(async (albumId) => {
           const response = await axios.get(`https://api.deezer.com/album/${albumId}`);
           return {
             id: response.data.id.toString(),
             title: response.data.title,
-            image: { uri: response.data.cover_medium }
+            artist: response.data.artist.name,
+            cover_medium: response.data.cover_xl,
           };
         });
 
-        // Fetch Artists (you'll need to replace with actual artist IDs)
         const artistPromises = ['27', '246791', '4050205'].map(async (artistId) => {
           const response = await axios.get(`https://api.deezer.com/artist/${artistId}`);
           return {
             id: response.data.id.toString(),
             name: response.data.name,
-            image: { uri: response.data.picture_medium }
+            image: { uri: response.data.picture_xl},
           };
         });
 
-        // Fetch Random Recommendations
         const recommendationsResponse = await axios.get('https://api.deezer.com/search?q=all&limit=4');
         const recommendationTracks = recommendationsResponse.data.data.map(track => ({
           id: track.id.toString(),
           title: track.title,
-          image: { uri: track.album.cover_medium }
+          artist: track.artist.name,
+          preview: track.preview,
+          image: { uri: track.album.cover_xl },
         }));
-
-        // Fetch Recently Played (this would typically come from your backend or user's history)
+    
         const recentlyPlayedResponse = await axios.get('https://api.deezer.com/search?q=pop&limit=4');
         const recentTracks = recentlyPlayedResponse.data.data.map(track => ({
           id: track.id.toString(),
           title: track.title,
-          image: { uri: track.album.cover_medium }
+          artist: track.artist.name,
+          preview: track.preview,
+          image: { uri: track.album.cover_xl },
         }));
 
-        // Wait for all promises to resolve
         const resolvedAlbums = await Promise.all(albumPromises);
         const resolvedArtists = await Promise.all(artistPromises);
 
-        // Set state
         setAlbums(resolvedAlbums);
         setArtists(resolvedArtists);
         setRecommendations(recommendationTracks);
@@ -69,7 +69,6 @@ const HomeScreen = () => {
     fetchData();
   }, []);
 
-  // Render loading state
   if (isLoading) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -77,13 +76,34 @@ const HomeScreen = () => {
       </View>
     );
   }
+  const handleTrackSelect = (track) => {
+    router.push({
+      pathname: '/PlayerScreen',
+      params: {
+        trackId: track.id,
+        title: track.title,
+        artist: track.artist,
+        coverArt: track.image.uri,
+        preview: track.preview
+      }
+    });
+  };
+  
+  const handleArtistSelect = (artist) => {
+    router.push({
+      pathname: '/ArtistSongs',
+      params: { 
+        artistId: artist.id,
+        artistName: artist.name 
+      }
+    });
+  };
+  
 
   return (
     <ScrollView style={styles.container}>
-      {/* Welcome Section */}
       <Text style={styles.welcomeText}>Welcome!</Text>
 
-      {/* Albums */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Albums</Text>
         <FlatList
@@ -91,54 +111,54 @@ const HomeScreen = () => {
           keyExtractor={(item) => item.id}
           numColumns={2}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.playlistCard}
-            onPress={() => router.push('/AlbumPlaylist')}
+            <TouchableOpacity
+              style={styles.playlistCard}
+              onPress={() => router.push({
+                pathname: '/AlbumPlaylist',
+                params: { albumId: item.id },
+              })}
             >
-              <Image source={item.image} style={styles.playlistImage} />
+              <Image source={{ uri: item.cover_medium }} style={styles.playlistImage} />
               <Text style={styles.playlistTitle} numberOfLines={1}>{item.title}</Text>
             </TouchableOpacity>
           )}
         />
       </View>
 
-      {/* Recently Played */}
       <Text style={styles.sectionTitle}>Recently Played</Text>
       <FlatList
         data={recentlyPlayed}
         keyExtractor={(item) => item.id}
         horizontal
-        showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.recentlyPlayedCard}>
+          <TouchableOpacity style={styles.recentlyPlayedCard}
+            onPress={() => handleTrackSelect(item)}>
             <Image source={item.image} style={styles.recentlyPlayedImage} />
           </TouchableOpacity>
         )}
       />
 
-      {/* Artists */}
       <Text style={styles.sectionTitle}>Artists</Text>
       <FlatList
         data={artists}
         keyExtractor={(item) => item.id}
         horizontal
-        showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.artistCard}>
+          <TouchableOpacity style={styles.artistCard}
+            onPress={() => handleArtistSelect(item)}>
             <Image source={item.image} style={styles.artistImage} />
             <Text style={styles.artistName}>{item.name}</Text>
           </TouchableOpacity>
         )}
       />
 
-      {/* Recommendations */}
       <Text style={styles.sectionTitle}>Recommendations</Text>
       <FlatList
         data={recommendations}
         keyExtractor={(item) => item.id}
         horizontal
-        showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.recentlyPlayedCard}>
+          <TouchableOpacity style={styles.recentlyPlayedCard} onPress={() => handleTrackSelect(item)}>
             <Image source={item.image} style={styles.recentlyPlayedImage} />
           </TouchableOpacity>
         )}

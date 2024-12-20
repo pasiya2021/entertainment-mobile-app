@@ -1,46 +1,86 @@
-import React from 'react';
-import { View, ScrollView, FlatList, Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import React, { useState, useEffect } from 'react';
+import { View, FlatList, Image, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import axios from 'axios';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
-const AlbumPlaylist = ({ route }) => {
-  if (!route.params || !route.params.album) {
+const AlbumPlaylist = () => {
+  const { albumId } = useLocalSearchParams();
+  const [album, setAlbum] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchAlbumData = async () => {
+      try {
+        const albumResponse = await axios.get(`https://api.deezer.com/album/${albumId}`);
+        setAlbum(albumResponse.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching album data:', error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchAlbumData();
+  }, [albumId]);
+
+  const handleTrackSelect = (track) => {
+    router.push({
+      pathname: '/PlayerScreen',
+      params: {
+        trackId: track.id,
+        title: track.title,
+        artist: album.artist.name,
+        coverArt: album.cover_xl,
+        preview: track.preview
+      }
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#FFF" />
+      </View>
+    );
+  }
+
+  if (!album) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <Text style={{ color: '#FFF', fontSize: 18 }}>
-          No album data provided. Please select an album from the home screen.
+          Unable to load album details. Please try again later.
         </Text>
       </View>
     );
   }
 
-  const { album } = route.params;
-
   return (
     <View style={styles.container}>
-      {/* Album Header */}
       <View style={styles.albumHeader}>
         <Image source={{ uri: album.cover_medium }} style={styles.albumCover} />
         <Text style={styles.albumTitle}>{album.title}</Text>
-        <Text style={styles.albumArtist}>Artist Name</Text>
+        <Text style={styles.albumArtist}>{album.artist.name}</Text>
         <TouchableOpacity style={styles.playButton}>
           <Text style={styles.playButtonText}>Play</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Playlist */}
-      <ScrollView style={styles.playlist}>
-        <FlatList
-          data={album.tracks.data}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item, index }) => (
+      <FlatList
+        data={album.tracks.data}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item, index }) => (
+          <TouchableOpacity onPress={() => handleTrackSelect(item)}>
             <View style={styles.trackItem}>
               <Text style={styles.trackNumber}>{index + 1}.</Text>
               <Text style={styles.trackTitle}>{item.title}</Text>
-              <Text style={styles.trackDuration}>{new Date(item.duration * 1000).toISOString().substr(14, 5)}</Text>
+              <Text style={styles.trackDuration}>
+                {new Date(item.duration * 1000).toISOString().substr(14, 5)}
+              </Text>
             </View>
-          )}
-        />
-      </ScrollView>
+          </TouchableOpacity>
+        )}
+      />
     </View>
   );
 };
@@ -77,6 +117,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 24,
     marginTop: 16,
+    width: 80,
   },
   playButtonText: {
     color: '#FFF',
@@ -93,6 +134,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#4D4D4D',
+   
+    marginLeft: 16,
+    marginRight: 16,
   },
   trackNumber: {
     fontSize: 16,
