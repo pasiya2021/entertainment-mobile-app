@@ -2,11 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { View, FlatList, Image, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import { useLocalSearchParams, router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useFonts } from 'expo-font';
+
 
 const ArtistSongs = () => {
   const params = useLocalSearchParams();
   const [songs, setSongs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+      const [loaded] = useFonts({
+        Roboto: require('../../assets/fonts/Roboto-Black.ttf'),
+      });
 
   useEffect(() => {
     const fetchArtistSongs = async () => {
@@ -45,6 +52,10 @@ const ArtistSongs = () => {
   }
 
   return (
+    <LinearGradient
+      colors={['#000000', '#2D0092', '#000000']}
+      style={styles.gradientBackground}
+    >
     <View style={styles.container}>
       <Text style={styles.title}>{params.artistName}</Text>
       <FlatList
@@ -69,14 +80,17 @@ const ArtistSongs = () => {
         )}
       />
     </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2F0D80',
     padding: 16,
+  },
+  gradientBackground: {
+    flex: 1, 
   },
   loadingContainer: {
     flex: 1,
@@ -89,6 +103,7 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontWeight: 'bold',
     marginBottom: 16,
+    fontFamily: 'Roboto'
   },
   songItem: {
     flexDirection: 'row',
@@ -96,6 +111,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#4D4D4D',
+    
   },
   songImage: {
     width: 50,
@@ -105,15 +121,18 @@ const styles = StyleSheet.create({
   songInfo: {
     marginLeft: 12,
     flex: 1,
+    
   },
   songTitle: {
     color: '#FFF',
     fontSize: 16,
+    fontFamily: 'Roboto'
   },
   songDuration: {
     color: '#C0C0C0',
     fontSize: 14,
     marginTop: 4,
+    fontFamily: 'Roboto'
   },
 });
 

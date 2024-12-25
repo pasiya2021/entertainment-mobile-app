@@ -4,8 +4,19 @@ import axios from 'axios';
 import { router } from 'expo-router';
 import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useFonts } from 'expo-font';
 
 const HomeScreen = () => {
+
+  const [loaded] = useFonts({
+    Roboto: require('../../assets/fonts/Roboto-Black.ttf'),
+  });
+
+  // if (!loaded) {
+  //   return <AppLoading />;
+  // }
+  
   const [albums, setAlbums] = useState([]);
   const [recentlyPlayed, setRecentlyPlayed] = useState([]);
   const [artists, setArtists] = useState([]);
@@ -15,7 +26,7 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const albumPromises = ['302127', '119608', '210362','302127', '119608', '210362'].map(async (albumId) => {
+        const albumPromises = ['119601', '119602', '119604','302127', '119613', '302128'].map(async (albumId) => {
           const response = await axios.get(`https://api.deezer.com/album/${albumId}`);
           return {
             id: response.data.id.toString(),
@@ -69,10 +80,11 @@ const HomeScreen = () => {
     fetchData();
   }, []);
 
+  
   if (isLoading) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color="#FFF" />
+      <View style={[styles.loadingContainer, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#2D0092" />
       </View>
     );
   }
@@ -101,7 +113,13 @@ const HomeScreen = () => {
   
 
   return (
+
+    <LinearGradient
+    colors={['#000000', '#2D0092', '#000000']} 
+    style={styles.gradientBackground}
+  >
     <ScrollView style={styles.container}>
+
       <Text style={styles.welcomeText}>Welcome!</Text>
 
       <View style={styles.section}>
@@ -164,35 +182,47 @@ const HomeScreen = () => {
         )}
       />
     </ScrollView>
-  );
+    </LinearGradient>
+    );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2F0D80',
     padding: 16,
   },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#2F0D80',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }, 
+  gradientBackground: {
+    flex: 1, 
+  },
+
   welcomeText: {
-    fontSize: 24,
+    fontSize: 30,
     color: '#FFF',
     fontWeight: 'bold',
     marginBottom: 16,
+    fontFamily: 'Roboto'
   },
   section: {
     marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 25,
     color: '#FFF',
     fontWeight: 'bold',
     marginVertical: 8,
+    fontFamily: 'Roboto'
   },
   playlistCard: {
     flex: 1,
     margin: 2,
     alignItems: 'center',
-    backgroundColor: '#2A2731',
+    backgroundColor: "rgba(21, 21, 21, 0.6)",
     borderRadius: 8,
     padding: 8,
     height: 60,
@@ -200,7 +230,6 @@ const styles = StyleSheet.create({
   playlistImage: {
     width: 45,
     height: 45,
-    borderRadius: 8,
     marginLeft: -80,
   },   
   playlistTitle: {
@@ -210,13 +239,15 @@ const styles = StyleSheet.create({
     maxWidth: 100,
     marginTop: -30,
     marginLeft: 50,
+    
+    
   },
   recentlyPlayedCard: {
     marginRight: 16,
   },
   recentlyPlayedImage: {
-    width: 100,
-    height: 100,
+    width: 135,
+    height: 135,
     borderRadius: 8,
   },
   artistCard: {
@@ -224,8 +255,8 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   artistImage: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
     borderRadius: 200,
   },
   artistName: {

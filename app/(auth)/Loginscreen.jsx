@@ -12,7 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 
 import * as WebBrowser from 'expo-web-browser';
-
+import { LinearGradient } from 'expo-linear-gradient';
 
 WebBrowser.maybeCompleteAuthSession()
 
@@ -23,8 +23,14 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
+  
+
   return (
-    <SafeAreaView style={styles.container}>
+    <LinearGradient
+      colors={['#000000', '#2D0092', '#000000']}
+      style={styles.gradientBackground}
+    >
+    <SafeAreaView style={styles.gradientBackground}>
       <StatusBar barStyle="dark-content" />
       
      
@@ -107,28 +113,32 @@ const LoginScreen = () => {
         </View>
       </View>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2D2D2D',
+    backgroundColor: '#000000',
   },
-  greenBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 300,
-    backgroundColor: '#500AF0',
-    borderBottomRightRadius: 150,
-    borderBottomLeftRadius: 150,
-  },
+  // greenBackground: {
+  //   position: 'absolute',
+  //   top: 0,
+  //   left: 0,
+  //   right: 0,
+  //   height: 300,
+  //   backgroundColor: '#500AF0',
+  //   borderBottomRightRadius: 150,
+  //   borderBottomLeftRadius: 150,
+  // },
   content: {
     flex: 1,
     paddingHorizontal: 24,
     paddingTop: 130,
+  },
+  gradientBackground: {
+    flex: 1,
   },
   welcomeText: {
     fontSize: 28,

@@ -3,11 +3,15 @@ import React from "react";
 import LottieView from "lottie-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
-
+import { LinearGradient } from 'expo-linear-gradient';
 const GetStartedScreen = () => {
   return (
+    <LinearGradient
+    colors={['#000000', '#2D0092', '#000000']}
+    style={styles.gradientBackground}
+  >
     <SafeAreaView>
-      <View style={{ backgroundColor: "#2D2D2D",height:"100%" }}>
+      <View style={{ height:"100%" }}>
         <View style={styles.stackContainer}>
           
           <LottieView
@@ -30,6 +34,10 @@ Welcome to Country Details App, your go-to guide for discovering countries aroun
         </View>
       </View>
     </SafeAreaView>
+
+    </LinearGradient>
+
+    
   );
 };
 
@@ -40,6 +48,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 60,
+  },
+  gradientBackground: {
+    flex: 1,
   },
   greenCircle: {
     width: 250,
@@ -69,7 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30,
+    borderRadius: 12,
     backgroundColor: "#500AF0",
   },
   buttonText: {

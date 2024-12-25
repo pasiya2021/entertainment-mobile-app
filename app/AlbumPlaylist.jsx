@@ -2,8 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { View, FlatList, Image, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import { useFonts } from 'expo-font';
 
 const AlbumPlaylist = () => {
+
+    const [loaded] = useFonts({
+      Roboto: require('../assets/fonts/Roboto-Black.ttf'),
+    });
+
   const { albumId } = useLocalSearchParams();
   const [album, setAlbum] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +47,7 @@ const AlbumPlaylist = () => {
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <View style={[styles.loadingContainer, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#FFF" />
       </View>
     );
@@ -56,13 +64,18 @@ const AlbumPlaylist = () => {
   }
 
   return (
+    <LinearGradient
+      colors={['#000000', '#2D0092', '#000000']}
+      style={styles.gradientBackground}
+    >
     <View style={styles.container}>
       <View style={styles.albumHeader}>
         <Image source={{ uri: album.cover_medium }} style={styles.albumCover} />
         <Text style={styles.albumTitle}>{album.title}</Text>
         <Text style={styles.albumArtist}>{album.artist.name}</Text>
         <TouchableOpacity style={styles.playButton}>
-          <Text style={styles.playButtonText}>Play</Text>
+          
+            <Ionicons name="play-circle" size={32} color="#FFF" />
         </TouchableOpacity>
       </View>
 
@@ -82,13 +95,24 @@ const AlbumPlaylist = () => {
         )}
       />
     </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    
+  },
+  loadingContainer: {
+    flex: 1,
     backgroundColor: '#2F0D80',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }, 
+  gradientBackground: {
+    flex: 1, 
+    
   },
   albumHeader: {
     alignItems: 'center',
@@ -105,6 +129,7 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontWeight: 'bold',
     marginTop: 16,
+    fontFamily: 'Roboto'
   },
   albumArtist: {
     fontSize: 16,
@@ -142,15 +167,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#C0C0C0',
     marginRight: 16,
+    fontFamily: 'Roboto'
   },
   trackTitle: {
     fontSize: 16,
     color: '#FFF',
     flex: 1,
+    fontFamily: 'Roboto'
   },
   trackDuration: {
     fontSize: 14,
     color: '#C0C0C0',
+    fontFamily: 'Roboto'
   },
 });
 
